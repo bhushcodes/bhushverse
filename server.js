@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const { createClient } = require('@libsql/client');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,7 +25,6 @@ app.use(helmet({
 }));
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
 
 // Rate limiting
 const loginLimiter = rateLimit({
@@ -80,7 +80,7 @@ async function initDatabase() {
     }
 }
 
-// Get all poems
+// API Routes
 app.get('/api/poems', async (req, res) => {
     try {
         const result = await turso.execute('SELECT * FROM poems ORDER BY created_at DESC');
@@ -90,7 +90,6 @@ app.get('/api/poems', async (req, res) => {
     }
 });
 
-// Get single poem
 app.get('/api/poems/:id', async (req, res) => {
     try {
         const result = await turso.execute({
@@ -107,7 +106,6 @@ app.get('/api/poems/:id', async (req, res) => {
     }
 });
 
-// Admin login
 app.post('/api/admin/login', loginLimiter, async (req, res) => {
     if (!ADMIN_PASSWORD) {
         res.status(500).json({ error: 'Admin password not configured' });
@@ -125,12 +123,10 @@ app.post('/api/admin/login', loginLimiter, async (req, res) => {
     res.json({ success: true, token });
 });
 
-// Verify token
 app.get('/api/admin/verify', verifyToken, (req, res) => {
     res.json({ valid: true });
 });
 
-// Add new poem
 app.post('/api/poems', verifyToken, async (req, res) => {
     try {
         const { title, content, author, date, language } = req.body;
@@ -148,7 +144,6 @@ app.post('/api/poems', verifyToken, async (req, res) => {
     }
 });
 
-// Update poem
 app.put('/api/poems/:id', verifyToken, async (req, res) => {
     try {
         const { title, content, author, date, language } = req.body;
@@ -173,10 +168,9 @@ app.put('/api/poems/:id', verifyToken, async (req, res) => {
     }
 });
 
-// Delete poem
 app.delete('/api/poems/:id', verifyToken, async (req, res) => {
     try {
-        const result = await turso.execute({
+        await turso.execute({
             sql: 'DELETE FROM poems WHERE id = ?',
             args: [req.params.id]
         });
@@ -186,11 +180,11 @@ app.delete('/api/poems/:id', verifyToken, async (req, res) => {
     }
 });
 
-// Serve index.html for all other routes (except API)
-app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api/')) {
-        return next();
-    }
+// Static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve index.html
+app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
