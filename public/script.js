@@ -46,6 +46,8 @@ function logoutAdmin() {
 // Page Navigation
 // ============================================
 
+let poemsList = []; // Store all poems for navigation
+
 function showPage(pageId) {
     previousPage = document.querySelector('.page.active')?.id || 'home-page';
     document.querySelectorAll('.page').forEach(page => {
@@ -93,8 +95,8 @@ async function showAdmin() {
     loadAdminPoems();
 }
 
-function showPoem(id) {
-    loadPoem(id);
+async function showPoem(id) {
+    await loadPoem(id);
     showPage('poem-page');
 }
 
@@ -146,6 +148,9 @@ async function loadPoems() {
     try {
         const response = await fetch(API_URL);
         let poems = await response.json();
+        
+        // Store poems list for navigation
+        poemsList = poems;
         
         // Filter by language
         if (currentLanguage !== 'all') {
@@ -203,11 +208,69 @@ async function loadPoem(id) {
         document.getElementById('poem-author').textContent = poem.author;
         document.getElementById('poem-date').textContent = formatDate(poem.date);
         document.getElementById('poem-content').textContent = poem.content;
+        
+        // Update navigation buttons
+        updatePoemNavigation();
     } catch (err) {
         console.error('Error loading poem:', err);
         showToast('Failed to load poem');
     }
 }
+
+// Navigation functions
+function updatePoemNavigation() {
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progress = document.getElementById('poem-progress');
+    
+    if (!currentPoem || poemsList.length === 0) {
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+        if (progress) progress.textContent = '';
+        return;
+    }
+    
+    const currentIndex = poemsList.findIndex(p => p.id === currentPoem.id);
+    const total = poemsList.length;
+    const isFirst = currentIndex === 0;
+    const isLast = currentIndex === total - 1;
+    
+    // Update progress text
+    document.getElementById('poem-progress').textContent = `${currentIndex + 1} of ${total}`;
+    
+    // Show/hide buttons
+    document.getElementById('prev-btn').style.display = isFirst ? 'none' : 'flex';
+    document.getElementById('next-btn').style.display = isLast ? 'none' : 'flex';
+}
+
+function navigatePoem(direction) {
+    if (!currentPoem || poemsList.length === 0) return;
+    
+    const currentIndex = poemsList.findIndex(p => p.id === currentPoem.id);
+    let newIndex;
+    
+    if (direction === 'next' && currentIndex < poemsList.length - 1) {
+        newIndex = currentIndex + 1;
+    } else if (direction === 'prev' && currentIndex > 0) {
+        newIndex = currentIndex - 1;
+    } else {
+        return;
+    }
+    
+    const newPoem = poemsList[newIndex];
+    showPoem(newPoem.id);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (document.getElementById('poem-page').classList.contains('active')) {
+        if (e.key === 'ArrowLeft') {
+            navigatePoem('prev');
+        } else if (e.key === 'ArrowRight') {
+            navigatePoem('next');
+        }
+    }
+});
 
 // ============================================
 // Admin Functions
