@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bhushverse - Poetry Collection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Libre+Baskerville:ital@0;1&family=Noto+Sans+Devanagari:ital,wght@0,400;0,500;1,400&family=Noto+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="showHome()">bhushverse</a>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showHome()">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Home Page - Poem List -->
+        <section id="home-page" class="page active">
+            <!-- Language Tabs -->
+            <div class="language-tabs">
+                <button class="lang-tab active" data-lang="all" onclick="switchLanguage('all')">
+                    <span class="lang-indicator"></span>
+                    All
+                </button>
+                <button class="lang-tab" data-lang="english" onclick="switchLanguage('english')">
+                    <span class="lang-indicator"></span>
+                    English
+                </button>
+                <button class="lang-tab" data-lang="hindi" onclick="switchLanguage('hindi')">
+                    <span class="lang-indicator"></span>
+                    हिंदी
+                </button>
+                <button class="lang-tab" data-lang="marathi" onclick="switchLanguage('marathi')">
+                    <span class="lang-indicator"></span>
+                    मराठी
+                </button>
+            </div>
+            
+            <div class="hero">
+                <h1>A place for my words</h1>
+                <p class="subtitle">Thoughts and poems I wrote</p>
+            </div>
+            <div class="poems-container" id="poems-list">
+                <!-- Poems will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Poem Detail Page -->
+        <section id="poem-page" class="page">
+            <div class="poem-detail">
+                <button class="back-btn" onclick="goBack()">← Back to Poems</button>
+                <article class="full-poem" id="full-poem">
+                    <div class="poem-language-badge" id="poem-language-badge"></div>
+                    <h1 id="poem-title"></h1>
+                    <p class="poem-meta">
+                        <span id="poem-author"></span>
+                        <span class="separator">•</span>
+                        <span id="poem-date"></span>
+                    </p>
+                    <div class="poem-content" id="poem-content"></div>
+                    <div class="poem-actions">
+                        <button class="share-btn" onclick="sharePoem()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                            Share
+                        </button>
+                        <button class="share-btn download-btn" onclick="downloadPoemAsImage()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Admin Page -->
+        <section id="admin-page" class="page">
+            <div class="admin-container">
+                <h1>Admin Panel</h1>
+                <p class="admin-subtitle">Manage your poetry collection</p>
+                
+                <!-- Language Filter for Admin -->
+                <div class="language-tabs admin-tabs">
+                    <button class="lang-tab active" data-lang="all" onclick="switchAdminLanguage('all')">All</button>
+                    <button class="lang-tab" data-lang="english" onclick="switchAdminLanguage('english')">English</button>
+                    <button class="lang-tab" data-lang="hindi" onclick="switchAdminLanguage('hindi')">हिंदी</button>
+                    <button class="lang-tab" data-lang="marathi" onclick="switchAdminLanguage('marathi')">मराठी</button>
+                </div>
+                
+                <!-- Add/Edit Form -->
+                <div class="poem-form">
+                    <h2 id="form-title">Add New Poem</h2>
+                    <form id="poem-form">
+                        <input type="hidden" id="poem-id">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" id="title" required placeholder="Enter poem title">
+                            </div>
+                            <div class="form-group form-group-small">
+                                <label for="language">Language</label>
+                                <select id="language">
+                                    <option value="english">English</option>
+                                    <option value="hindi">हिंदी (Hindi)</option>
+                                    <option value="marathi">मराठी (Marathi)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="author">Author</label>
+                            <input type="text" id="author" placeholder="Author name">
+                        </div>
+                        <div class="form-group">
+                            <label for="content">Poem Content</label>
+                            <textarea id="content" rows="10" required placeholder="Write your poem here..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Publish Date</label>
+                            <input type="date" id="date">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-btn">Save Poem</button>
+                            <button type="button" class="cancel-btn" onclick="resetForm()" style="display:none;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Poems List for Admin -->
+                <div class="admin-poems-list">
+                    <h2>Your Poems</h2>
+                    <div id="admin-poems">
+                        <!-- Admin poems will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Floating Social Links -->
+    <div class="floating-social">
+        <a href="https://www.instagram.com/unfiltered.bhushan/" target="_blank" rel="noopener noreferrer" class="social-icon instagram" title="Follow on Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Login</h2>
+            <p>Enter your password to access the admin panel</p>
+            <form id="login-form">
+                <input type="password" id="admin-password" placeholder="Password" required>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+            <p class="modal-error" id="login-error"></p>
+        </div>
+    </div>
+
+    <!-- Hidden canvas for image generation -->
+    <canvas id="poem-canvas" style="display:none;"></canvas>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "poems": [
+    {
+      "id": "1773079753591",
+      "title": "BHUSHAN",
+      "content": "I don't know\nwhat to say.\n\nThey said,\n\"what was they said?\"\n\nI said,\n\"enough is nothing for me.\"\n\nThey said,\n\"what you said—\nrepeat again.\"",
+      "author": "bhushan",
+      "date": "2026-03-09",
+      "language": "english"
+    },
+    {
+      "id": "1",
+      "title": "The Quiet Morning",
+      "content": "In the stillness of dawn,\nthe world holds its breath.\nShadows stretch slow and long,\nkissing the earth goodbye.\n\nThe sun rises gently,\na golden whisper of light,\ntouching the sleeping flowers,\nwaking them to the new day.\n\nIn this quiet moment,\ntime seems to pause,\nand I find peace \nin simply being here.",
+      "author": "Anonymous",
+      "date": "2026-03-01",
+      "language": "english"
+    },
+    {
+      "id": "2",
+      "title": "Whispers of the Wind",
+      "content": "The wind speaks in secrets,\nmurmuring through the trees,\ncarrying stories of distant lands,\nand memories of yesterday.\n\nIt weaves through the meadow,\ndancing with the wildflowers,\nplaying with the leaves,\nwriting poetry in motion.\n\nListen closely, dear friend,\nand you will hear,\nthe wisdom it whispers,\nto those who lend an ear.",
+      "author": "Anonymous",
+      "date": "2026-03-05",
+      "language": "english"
+    },
+    {
+      "id": "3",
+      "title": "Stars Above",
+      "content": "When darkness wraps the sky,\nthe stars begin to glow,\ntwinkling like scattered diamonds,\nacross the velvet night.\n\nThey hold ancient stories,\nof constellations past,\nand whisper to dreamers,\nthat hope will always last.\n\nSo look up to the heavens,\nlet your soul take flight,\namong the endless starlight,\nfind your guiding light.",
+      "author": "Anonymous",
+      "date": "2026-03-08",
+      "language": "english"
+    }
+  ]
+}
