@@ -186,8 +186,11 @@ app.delete('/api/poems/:id', verifyToken, async (req, res) => {
     }
 });
 
-// Serve index.html for all other routes
-app.get('*', (req, res) => {
+// Serve index.html for all other routes (except API)
+app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+        return next();
+    }
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
