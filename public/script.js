@@ -87,6 +87,11 @@ function showAbout() {
     setTimeout(() => animatePageElements('about-page'), 100);
 }
 
+function showTerms() {
+    updateNavLinks('terms');
+    showPage('terms-page');
+}
+
 function updateNavLinks(page) {
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
@@ -353,6 +358,155 @@ function shareBlog() {
     else copyToClipboard(currentBlog.title + '\n\n' + currentBlog.content);
 }
 
+async function downloadBlogAsImage() {
+    if (!currentBlog) return;
+
+    const canvas = document.getElementById('poem-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 1080;
+    canvas.height = 1350;
+
+    const langName = LANGUAGES[currentBlog.language]?.name || '';
+    const maxWidth = 820;
+    const contentFont = (currentBlog.language === 'hindi' || currentBlog.language === 'marathi')
+        ? '400 26px Hind, sans-serif'
+        : '24px Lora, Georgia, serif';
+    const lineHeight = (currentBlog.language === 'hindi' || currentBlog.language === 'marathi') ? 45 : 40;
+
+    // Flatten content into drawable lines with wrapping
+    ctx.font = contentFont;
+    const allLines = [];
+    currentBlog.content.split('\n').forEach((line) => {
+        if (line.trim() === '') {
+            allLines.push('');
+        } else {
+            wrapText(ctx, line, maxWidth).forEach((wrapped) => allLines.push(wrapped));
+        }
+    });
+
+    function pageCapacity(startY) {
+        const maxY = canvas.height - 90;
+        let y = startY;
+        let count = 0;
+        while (count < allLines.length) {
+            const increment = allLines[count] === '' ? lineHeight * 0.5 : lineHeight;
+            if (y + increment > maxY) break;
+            y += increment;
+            count += 1;
+        }
+        return count;
+    }
+
+    // First page has bigger heading space, next pages are compact
+    const titleProbeFont = 'italic 500 46px Fraunces, Georgia, serif';
+    ctx.font = titleProbeFont;
+    const titleLines = wrapText(ctx, currentBlog.title, canvas.width - 150);
+    const firstStartY = 150 + (titleLines.length * 58) + 24 + 54;
+    const otherStartY = 245;
+
+    const pages = [];
+    let cursor = 0;
+    while (cursor < allLines.length) {
+        const startY = pages.length === 0 ? firstStartY : otherStartY;
+        const slice = allLines.slice(cursor);
+        // temp assign to reuse capacity logic
+        const prev = allLines.splice(0, allLines.length, ...slice);
+        let take = pageCapacity(startY);
+        allLines.splice(0, allLines.length, ...prev);
+        if (take <= 0) take = 1;
+        pages.push(allLines.slice(cursor, cursor + take));
+        cursor += take;
+    }
+
+    const totalPages = Math.max(1, pages.length);
+
+    function drawBase() {
+        ctx.fillStyle = '#FAF7F2';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = '#E0DAD3';
+        ctx.lineWidth = 24;
+        ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
+
+        ctx.strokeStyle = '#D0CAC3';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(45, 45, canvas.width - 90, canvas.height - 90);
+
+        if (langName) {
+            ctx.font = '600 13px Outfit, sans-serif';
+            const badgeWidth = ctx.measureText(langName).width + 24;
+            ctx.fillStyle = 'rgba(122, 92, 62, 0.08)';
+            ctx.beginPath();
+            ctx.roundRect(canvas.width / 2 - badgeWidth / 2, 80, badgeWidth, 24, 12);
+            ctx.fill();
+            ctx.fillStyle = '#7A5C3E';
+            ctx.textAlign = 'center';
+            ctx.fillText(langName.toUpperCase(), canvas.width / 2, 96);
+        }
+    }
+
+    for (let pageIndex = 0; pageIndex < totalPages; pageIndex += 1) {
+        drawBase();
+
+        let contentStartY;
+        if (pageIndex === 0) {
+            ctx.fillStyle = '#1A1816';
+            ctx.font = 'italic 500 46px Fraunces, Georgia, serif';
+            ctx.textAlign = 'center';
+            let titleY = 150;
+            titleLines.forEach((line) => {
+                ctx.fillText(line, canvas.width / 2, titleY);
+                titleY += 58;
+            });
+
+            ctx.font = '22px Outfit, sans-serif';
+            ctx.fillStyle = '#7A5C3E';
+            ctx.fillText(`— ${currentBlog.author}`, canvas.width / 2, titleY + 24);
+            contentStartY = titleY + 78;
+        } else {
+            ctx.fillStyle = '#1A1816';
+            ctx.font = 'italic 500 30px Fraunces, Georgia, serif';
+            ctx.textAlign = 'center';
+            const compactTitle = wrapText(ctx, currentBlog.title, canvas.width - 180)[0] || currentBlog.title;
+            ctx.fillText(compactTitle, canvas.width / 2, 150);
+            ctx.font = '500 14px Outfit, sans-serif';
+            ctx.fillStyle = '#8A8580';
+            ctx.fillText(`continued`, canvas.width / 2, 180);
+            contentStartY = otherStartY;
+        }
+
+        ctx.font = contentFont;
+        ctx.fillStyle = '#1A1816';
+        let y = contentStartY;
+        pages[pageIndex].forEach((line) => {
+            if (line === '') {
+                y += lineHeight * 0.5;
+            } else {
+                ctx.fillText(line, canvas.width / 2, y);
+                y += lineHeight;
+            }
+        });
+
+        ctx.font = '14px Outfit, sans-serif';
+        ctx.fillStyle = '#8A8580';
+        ctx.fillText(`bhushverse • ${pageIndex + 1}/${totalPages}`, canvas.width / 2, canvas.height - 45);
+
+        const link = document.createElement('a');
+        const safeTitle = makeDownloadFileName(currentBlog.title, 'blog');
+        link.download = totalPages === 1
+            ? `${safeTitle}.png`
+            : `${safeTitle}-part-${pageIndex + 1}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        // small gap so multiple downloads trigger reliably
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((resolve) => setTimeout(resolve, 180));
+    }
+
+    showToast(totalPages === 1 ? 'Blog image downloaded!' : `${totalPages} blog images downloaded!`);
+}
+
 // ==================== Admin Poems ====================
 
 async function loadAdminPoems() {
@@ -590,7 +744,7 @@ async function downloadPoemAsImage() {
     ctx.fillText('bhushverse', canvas.width / 2, canvas.height - 50);
     
     const link = document.createElement('a');
-    link.download = `${currentPoem.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.png`;
+    link.download = `${makeDownloadFileName(currentPoem.title, 'poem')}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
     showToast('Image downloaded!');
@@ -636,6 +790,15 @@ document.getElementById('login-modal').addEventListener('click', (e) => {
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function makeDownloadFileName(title, fallback = 'download') {
+    const cleaned = String(title || '')
+        .trim()
+        .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '')
+        .replace(/\s+/g, ' ')
+        .replace(/[. ]+$/g, '');
+    return cleaned || fallback;
 }
 
 function escapeHtml(text) {

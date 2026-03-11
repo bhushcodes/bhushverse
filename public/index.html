@@ -41,6 +41,7 @@
                 <li><a href="#" class="nav-link active" data-page="home" onclick="showHome()">Poems</a></li>
                 <li><a href="#" class="nav-link" data-page="blog" onclick="showBlog()">Blog</a></li>
                 <li><a href="#" class="nav-link" data-page="about" onclick="showAbout()">About</a></li>
+                <li><a href="#" class="nav-link" data-page="terms" onclick="showTerms()">Terms</a></li>
             </ul>
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                 <span></span>
@@ -55,6 +56,7 @@
         <a href="#" onclick="showHome(); closeMobileMenu();">Poems</a>
         <a href="#" onclick="showBlog(); closeMobileMenu();">Blog</a>
         <a href="#" onclick="showAbout(); closeMobileMenu();">About</a>
+        <a href="#" onclick="showTerms(); closeMobileMenu();">Terms</a>
     </div>
 
     <!-- Main Content -->
@@ -181,6 +183,7 @@
                             <span>Download</span>
                         </button>
                     </div>
+                    <p class="content-copyright">© 2026 Bhushan. All rights reserved. Reuse or republication requires permission.</p>
                     <nav class="poem-navigation" id="poem-navigation">
                         <button class="nav-btn prev-btn" id="prev-btn" onclick="navigatePoem('prev')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -222,8 +225,33 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
                             <span>Share</span>
                         </button>
+                        <button class="action-btn" onclick="downloadBlogAsImage()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            <span>Download</span>
+                        </button>
                     </div>
+                    <p class="content-copyright">© 2026 Bhushan. All rights reserved. Reuse or republication requires permission.</p>
                 </article>
+            </div>
+        </section>
+
+        <!-- Terms Page -->
+        <section id="terms-page" class="page">
+            <div class="terms-page">
+                <h1>Terms of Use</h1>
+                <div class="terms-card">
+                    <h3>Copyright</h3>
+                    <p>All poems, blogs, titles, and creative writing on this website are copyrighted content owned by Bhushan unless explicitly stated otherwise.</p>
+                </div>
+                <div class="terms-card">
+                    <h3>Usage Policy</h3>
+                    <p>You may read and share links to this content. You may not copy, reproduce, repost, translate, modify, publish, or distribute any poem/blog text or generated images without written permission from the author.</p>
+                </div>
+                <div class="terms-card">
+                    <h3>Permissions</h3>
+                    <p>For reuse requests, collaborations, or publication rights, please contact via Instagram: <a href="https://www.instagram.com/unfiltered.bhushan/" target="_blank" rel="noopener noreferrer">@unfiltered.bhushan</a>.</p>
+                </div>
+                <p class="terms-note">© 2026 Bhushan. All rights reserved.</p>
             </div>
         </section>
 
@@ -359,6 +387,13 @@
             </div>
         </section>
     </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>© 2026 Bhushan. All rights reserved.</span>
+            <a href="#" class="footer-link" onclick="showTerms(); return false;">Usage Policy & Terms</a>
+        </div>
+    </footer>
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>

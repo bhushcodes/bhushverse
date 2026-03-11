@@ -831,6 +831,58 @@ main {
 
 .social-link:hover { color: var(--accent-light); }
 
+.terms-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: calc(70px + var(--spacing-xl)) 0 var(--spacing-xl);
+}
+
+.terms-page h1 {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.terms-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.terms-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: var(--text-primary);
+}
+
+.terms-card p {
+    font-size: 0.98rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+.terms-card a {
+    color: var(--accent);
+    text-decoration: none;
+    font-family: var(--font-sans);
+}
+
+.terms-card a:hover { color: var(--accent-light); }
+
+.terms-note {
+    margin-top: var(--spacing-md);
+    text-align: center;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
 /* ============================================
    DETAIL PAGES
    ============================================ */
@@ -942,6 +994,15 @@ main {
     display: flex;
     justify-content: center;
     gap: var(--spacing-sm);
+}
+
+.content-copyright {
+    margin-top: var(--spacing-md);
+    text-align: center;
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.6;
 }
 
 .action-btn {
@@ -1267,6 +1328,35 @@ main {
     z-index: 1500;
 }
 
+.site-footer {
+    border-top: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(8px);
+    margin-top: var(--spacing-md);
+}
+
+.footer-content {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0.9rem var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.footer-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.footer-link:hover { color: var(--accent-light); }
+
 .social-icon {
     width: 44px;
     height: 44px;
@@ -1316,6 +1406,7 @@ main {
     .floating-social { bottom: 20px; right: 20px; }
     .social-icon { width: 40px; height: 40px; }
     .blog-hero h1, .about-hero h1 { font-size: 2.2rem; }
+    .terms-page h1 { font-size: 2.1rem; }
 }
 
 @media (max-width: 480px) {
