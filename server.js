@@ -269,7 +269,7 @@ app.put('/api/blogs/:id', verifyToken, async (req, res) => {
         const { title, content, excerpt, author, date, language, status, featured_image, tags } = req.body;
         
         await turso.execute({
-            sql: `UPDATE blogs SET title = ?, content = ?, excerpt = ?, author = ?, date = ?, language = ?, status = ?, featured_image = ?, tags = ?, updated_at = strftime('%s', 'now') WHERE id = ?`,
+            sql: `UPDATE blogs SET title = ?, content = ?, excerpt = ?, author = ?, date = ?, language = ?, status = ?, featured_image = ?, tags = ? WHERE id = ?`,
             args: [title, content, excerpt || '', author, date, language || 'english', status || 'draft', featured_image || '', tags || '', req.params.id]
         });
         

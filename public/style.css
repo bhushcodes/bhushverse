@@ -198,6 +198,14 @@ body.lang-hindi, body.lang-marathi {
     font-feature-settings: "onum" 1, "pnum" 1;
 }
 
+.poem-content.lang-hinglish,
+.blog-content.lang-hinglish {
+    font-family: var(--font-body);
+    font-size: 1.08rem;
+    line-height: 2;
+    font-feature-settings: "onum" 1, "pnum" 1;
+}
+
 /* ============================================
    NAVIGATION
    ============================================ */

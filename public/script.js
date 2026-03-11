@@ -21,7 +21,8 @@ let blogsList = [];
 const LANGUAGES = {
     english: { name: 'English', fontClass: 'lang-english' },
     hindi: { name: 'हिंदी', fontClass: 'lang-hindi' },
-    marathi: { name: 'मराठी', fontClass: 'lang-marathi' }
+    marathi: { name: 'मराठी', fontClass: 'lang-marathi' },
+    hinglish: { name: 'Hinglish', fontClass: 'lang-hinglish' }
 };
 
 // Admin auth
