@@ -2176,10 +2176,17 @@ app.get('/api/users/:id/is-following', verifyUserToken, async (req, res) => {
 
 app.get('/api/users/:id', attachUserIfPresent, async (req, res) => {
     try {
-        await ensureUserUsername(req.params.id);
+        const userIdOrUsername = req.params.id;
+        
+        // Check if it's a UUID or username
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userIdOrUsername);
+        const query = isUUID 
+            ? 'SELECT uid, username, display_name, photo_url, bio, gender, age, created_at FROM users WHERE uid = ?'
+            : 'SELECT uid, username, display_name, photo_url, bio, gender, age, created_at FROM users WHERE username = ?';
+        
         const result = await turso.execute({
-            sql: 'SELECT uid, username, display_name, photo_url, bio, gender, age, created_at FROM users WHERE uid = ?',
-            args: [req.params.id]
+            sql: query,
+            args: [userIdOrUsername]
         });
         
         if (result.rows.length === 0) {
@@ -2192,7 +2199,7 @@ app.get('/api/users/:id', attachUserIfPresent, async (req, res) => {
         // Get followers count
         const followersCount = await turso.execute({
             sql: 'SELECT COUNT(*) as count FROM followers WHERE following_id = ?',
-            args: [req.params.id]
+            args: [row.uid]
         });
         
         // Get following count

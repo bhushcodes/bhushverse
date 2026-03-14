@@ -33,6 +33,95 @@ let userToken = localStorage.getItem('userToken');
 let googleAuthReady = false;
 let googleSignInEnabled = true;
 let pendingProfilePicture = null;
+let isNavigating = false;
+
+// ==================== Router ====================
+
+const routes = {
+    '': { page: 'home-page', fn: showHome },
+    '/': { page: 'home-page', fn: showHome },
+    '/index.html': { page: 'home-page', fn: showHome },
+    '/poems': { page: 'home-page', fn: showHome },
+    '/poems/:lang': { page: 'home-page', fn: showHome },
+    '/poem/:id': { page: 'poem-page', fn: showPoemById },
+    '/blogs': { page: 'blog-page', fn: showBlog },
+    '/blog/:id': { page: 'blog-detail-page', fn: showBlogById },
+    '/community': { page: 'community-page', fn: showCommunity },
+    '/community/post/:id': { page: 'community-post-page', fn: showCommunityPostById },
+    '/profile': { page: 'profile-page', fn: showOwnProfile },
+    '/profile/:username': { page: 'profile-page', fn: showUserProfile },
+    '/about': { page: 'about-page', fn: showAbout },
+    '/terms': { page: 'terms-page', fn: showTerms },
+    '/admin': { page: 'admin-page', fn: showAdmin }
+};
+
+function parseRoute(pathname) {
+    // Remove trailing slash except for root
+    let path = pathname.replace(/\/$/, '') || '/';
+    // Remove leading slash for matching
+    const pathWithoutSlash = path === '/' ? '/' : path.replace(/^\//, '');
+    
+    for (const [route, config] of Object.entries(routes)) {
+        // Exact match
+        if (route === path || route === pathWithoutSlash) {
+            return { ...config, params: {} };
+        }
+        
+        const routeParts = route.split('/').filter(Boolean);
+        const pathParts = pathWithoutSlash.split('/').filter(Boolean);
+        
+        if (routeParts.length === pathParts.length) {
+            const params = {};
+            let matches = true;
+            
+            for (let i = 0; i < routeParts.length; i++) {
+                if (routeParts[i].startsWith(':')) {
+                    params[routeParts[i].slice(1)] = pathParts[i];
+                } else if (routeParts[i] !== pathParts[i]) {
+                    matches = false;
+                    break;
+                }
+            }
+            
+            if (matches) {
+                return { ...config, params };
+            }
+        }
+    }
+    
+    // Default to home
+    return { page: 'home-page', fn: showHome, params: {} };
+}
+
+function navigateTo(url, addToHistory = true) {
+    if (isNavigating) return;
+    isNavigating = true;
+    
+    const route = parseRoute(url);
+    
+    if (addToHistory) {
+        window.history.pushState({ path: url }, '', url);
+    }
+    
+    route.fn(route.params);
+    
+    isNavigating = false;
+}
+
+function handlePopState(event) {
+    if (event.state && event.state.path) {
+        navigateTo(event.state.path, false);
+    } else {
+        navigateTo(window.location.pathname, false);
+    }
+}
+
+window.addEventListener('popstate', handlePopState);
+
+function initRouter() {
+    const path = window.location.pathname;
+    navigateTo(path, false);
+}
 
 // Language config
 const LANGUAGES = {
@@ -110,8 +199,8 @@ function animatePageElements(pageId) {
     });
 }
 
-function showHome() {
-    currentLanguage = 'all';
+function showHome(params = {}) {
+    currentLanguage = params.lang || 'all';
     clearDetailUrls();
     updateNavLinks('home');
     updateLanguageTabs('home-page');
@@ -134,14 +223,35 @@ function showCommunity() {
     loadCommunityFeed();
 }
 
+async function showOwnProfile() {
+    await showProfile(currentUser?.id || null);
+}
+
+async function showUserProfile(params = {}) {
+    if (params.username) {
+        const userId = await getUserIdByUsername(params.username);
+        if (userId) {
+            await showProfile(userId);
+        } else {
+            showToast('User not found');
+            navigateTo('/');
+        }
+    } else {
+        await showProfile(currentUser?.id || null);
+    }
+}
+
 async function showProfile(userId = currentUser?.id || null, initialTab = 'posts') {
     activeProfileUserId = userId;
     activeProfileListMode = initialTab === 'following' ? 'following' : 'followers';
     profileEditOpen = false;
-    clearDetailUrls();
     updateNavLinks('profile');
     showPage('profile-page');
     await loadProfilePage();
+    // Update URL after profile loads
+    if (activeProfileData && activeProfileData.user && activeProfileData.user.username) {
+        history.replaceState({}, '', `/profile/${activeProfileData.user.username}`);
+    }
 }
 
 function showAbout() {
@@ -280,7 +390,13 @@ function applyUserSession(data, successMessage = 'Signed in successfully') {
 function openUserProfile(userId, event, initialTab = 'posts') {
     if (event) event.stopPropagation();
     if (!userId) return;
-    showProfile(userId, initialTab);
+    // Get username from the user data if available, otherwise use ID
+    const user = activeProfileData?.user;
+    if (user && user.id === userId && user.username) {
+        navigateTo(`/profile/${user.username}`);
+    } else {
+        showProfile(userId, initialTab);
+    }
 }
 
 async function loadCurrentUser() {
@@ -385,11 +501,41 @@ async function showAdmin() {
     adminLanguage = 'all';
     adminBlogLanguage = 'all';
     showPage('admin-page');
+    history.replaceState({}, '', '/admin');
     loadAdminPoems();
     loadAdminBlogs();
 }
 
 function showLogin() { document.getElementById('login-modal').classList.add('show'); }
+
+async function showPoemById(params = {}) {
+    if (params.id) {
+        await loadPoem(params.id);
+        showPage('poem-page');
+        setDetailUrl('poem', params.id);
+    }
+}
+
+async function showBlogById(params = {}) {
+    if (params.id) {
+        await loadBlog(params.id);
+        showPage('blog-detail-page');
+        setDetailUrl('blog', params.id);
+    }
+}
+
+async function showCommunityPostById(params = {}) {
+    if (params.id) {
+        const loaded = await loadCommunityPost(params.id);
+        if (!loaded) {
+            navigateTo('/community');
+            return;
+        }
+        updateNavLinks('community');
+        showPage('community-post-page');
+        setDetailUrl('post', params.id);
+    }
+}
 
 async function showPoem(id) {
     await loadPoem(id);
@@ -411,14 +557,27 @@ async function showCommunityPost(id) {
     setDetailUrl('post', id);
 }
 
+async function getUserIdByUsername(username) {
+    try {
+        const response = await fetch(`${USERS_API_URL}/${username}`);
+        if (response.ok) {
+            const data = await response.json();
+            return data.id;
+        }
+    } catch (err) {
+        console.error('Error fetching user:', err);
+    }
+    return null;
+}
+
 function goBack() {
-    clearDetailUrls();
-    showPage(previousPage || 'home-page');
-    if (previousPage === 'admin-page') { loadAdminPoems(); loadAdminBlogs(); }
-    else if (previousPage === 'blog-page') loadBlogs();
-    else if (previousPage === 'community-page') loadCommunityFeed();
-    else if (previousPage === 'profile-page') loadProfilePage();
-    else loadPoems();
+    // Try to go back in browser history first
+    if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        // Fallback to navigating to home
+        navigateTo('/');
+    }
 }
 
 // ==================== Mobile Menu ====================
@@ -561,7 +720,7 @@ async function loadPoems() {
         }
         
         container.innerHTML = poems.map((poem, index) => `
-            <div class="poem-card" onclick="showPoem('${poem.id}')" style="animation-delay: ${index * 0.08}s">
+            <a href="/poem/${poem.id}" onclick="navigateTo('/poem/${poem.id}'); return false;" class="poem-card" style="animation-delay: ${index * 0.08}s">
                 <span class="card-lang-badge">${LANGUAGES[poem.language]?.name || poem.language}</span>
                 <h3>${escapeHtml(poem.title)}</h3>
                 <p class="poem-card-preview">${escapeHtml(poem.content)}</p>
@@ -570,7 +729,7 @@ async function loadPoems() {
                     <span class="separator">•</span>
                     <span>${formatDate(poem.date)}</span>
                 </div>
-            </div>
+            </a>
         `).join('');
     } catch (err) {
         container.innerHTML = '<div class="empty-state"><p>Failed to load poems.</p></div>';
@@ -648,7 +807,7 @@ async function loadBlogs() {
         }
         
         container.innerHTML = blogs.map((blog, index) => `
-            <div class="blog-card" onclick="showBlogDetail('${blog.id}')" style="animation-delay: ${index * 0.08}s">
+            <a href="/blog/${blog.id}" onclick="navigateTo('/blog/${blog.id}'); return false;" class="blog-card" style="animation-delay: ${index * 0.08}s">
                 <span class="card-lang-badge">${LANGUAGES[blog.language]?.name || blog.language}</span>
                 <div class="blog-card-content">
                     <h3>${escapeHtml(blog.title)}</h3>
@@ -659,7 +818,7 @@ async function loadBlogs() {
                     <span class="separator">•</span>
                     <span>${formatDate(blog.date)}</span>
                 </div>
-            </div>
+            </a>
         `).join('');
     } catch (err) {
         container.innerHTML = '<div class="blog-empty"><p>Failed to load blogs.</p></div>';
@@ -1049,22 +1208,53 @@ function buildDetailUrl(param, id) {
     return url.toString();
 }
 
-function setDetailUrl(param, id) {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('poem');
-    url.searchParams.delete('blog');
-    url.searchParams.delete('post');
-    url.searchParams.set(param, id);
-    history.replaceState({}, '', `${url.pathname}${url.search}`);
+function getProfileUrl(username) {
+    return `/profile/${username}`;
+}
+
+function getPoemUrl(id) {
+    return `/poem/${id}`;
+}
+
+function getBlogUrl(id) {
+    return `/blog/${id}`;
+}
+
+function getCommunityPostUrl(id) {
+    return `/community/post/${id}`;
+}
+
+function setDetailUrl(type, id) {
+    let url;
+    switch(type) {
+        case 'poem':
+            url = getPoemUrl(id);
+            break;
+        case 'blog':
+            url = getBlogUrl(id);
+            break;
+        case 'post':
+            url = getCommunityPostUrl(id);
+            break;
+        default:
+            return;
+    }
+    history.replaceState({}, '', url);
 }
 
 function clearDetailUrls() {
-    const url = new URL(window.location.href);
-    if (!url.searchParams.has('poem') && !url.searchParams.has('blog') && !url.searchParams.has('post')) return;
-    url.searchParams.delete('poem');
-    url.searchParams.delete('blog');
-    url.searchParams.delete('post');
-    history.replaceState({}, '', `${url.pathname}${url.search}`);
+    // Only clear if we're on a detail page
+    const path = window.location.pathname;
+    if (path.match(/^\/(poem|blog|community\/post)\//)) {
+        // Get the base page
+        if (path.startsWith('/community/post/')) {
+            navigateTo('/community', false);
+        } else if (path.startsWith('/poem/')) {
+            navigateTo('/poems', false);
+        } else if (path.startsWith('/blog/')) {
+            navigateTo('/blogs', false);
+        }
+    }
 }
 
 function formatDateTime(dateString) {
@@ -1142,21 +1332,23 @@ function renderContentCard(item, options = {}) {
         showDefaultActions = true
     } = options;
     const preview = escapeHtml(item.content).replace(/\n/g, '<br>');
-    const clickHandler = clickable ? `onclick="openContentItemByType('${item.contentType}', '${item.id}')"` : '';
+    const linkUrl = `/community/post/${item.id}`;
+    const clickHandler = clickable ? `onclick="navigateTo('${linkUrl}'); return false;"` : '';
     const isFollowing = item.authorIsFollowing;
     const showFollowBtn = currentUser && item.authorId && item.authorId !== currentUser?.id;
-    const authorClickHandler = item.authorId ? `onclick="openUserProfile('${item.authorId}', event)"` : '';
+    const authorUsername = item.author?.username || '';
+    const authorClickHandler = item.authorId ? `onclick="event.stopPropagation(); navigateTo('/profile/${authorUsername}'); return false;"` : '';
     
     return `
         <article class="community-card ${clickable ? 'community-card-clickable' : ''}" ${clickHandler}>
             <div class="community-card-header">
-                <div class="community-author ${item.authorId ? 'profile-link-trigger' : ''}" ${authorClickHandler}>
+                <a href="/profile/${authorUsername}" class="community-author ${item.authorId ? 'profile-link-trigger' : ''}" ${authorClickHandler}>
                     <img class="community-author-avatar" src="${getAvatarSrc(item.author.profilePicture, item.author.name)}" alt="${escapeHtml(item.author.name)}">
                     <div class="community-author-meta">
                         <strong>${escapeHtml(item.author.name)}</strong>
                         <span>${item.author.personalId ? `@${escapeHtml(item.author.personalId)} • ` : ''}${formatDateTime(item.createdAt)}</span>
                     </div>
-                </div>
+                </a>
                 <div class="community-card-actions">
                     <span class="post-type-badge">${getContentBadgeLabel(item)}${item.status === 'draft' ? ' Draft' : ''}</span>
                     ${showFollowBtn ? `
@@ -1511,7 +1703,7 @@ function renderProfilePostGrid(posts, emptyMessage) {
     container.innerHTML = posts.map((post) => {
         const excerpt = escapeHtml(post.content).replace(/\n/g, '<br>');
         return `
-            <article class="profile-post-tile" onclick="showCommunityPost('${post.id}')">
+            <a href="/community/post/${post.id}" onclick="navigateTo('/community/post/${post.id}'); return false;" class="profile-post-tile">
                 <div class="profile-post-tile-surface">
                     <span class="profile-post-type">${escapeHtml(formatPostType(post.postType))}</span>
                     <h3>${escapeHtml(post.title)}</h3>
@@ -1521,7 +1713,7 @@ function renderProfilePostGrid(posts, emptyMessage) {
                     <span>${post.likeCount} like${post.likeCount === 1 ? '' : 's'}</span>
                     <span>${formatDate(post.createdAt)}</span>
                 </div>
-            </article>
+            </a>
         `;
     }).join('');
 }
@@ -1535,8 +1727,9 @@ function renderUserList(containerId, users, emptyMessage) {
 
     container.innerHTML = users.map((user) => {
         const canFollow = user.isFollowing !== null;
+        const username = user.username || '';
         return `
-            <article class="profile-user-card" onclick="openUserProfile('${user.id}', event)">
+            <a href="/profile/${username}" onclick="navigateTo('/profile/${username}'); return false;" class="profile-user-card">
                 <div class="profile-user-card-main">
                     <img class="community-author-avatar" src="${getAvatarSrc(user.profilePicture, user.name)}" alt="${escapeHtml(user.name)}">
                     <div class="profile-user-copy">
@@ -1549,13 +1742,13 @@ function renderUserList(containerId, users, emptyMessage) {
                     <button class="follow-btn ${user.isFollowing ? 'following' : ''}"
                             data-user-id="${user.id}"
                             data-following="${Boolean(user.isFollowing)}"
-                            onclick="event.stopPropagation(); toggleFollow('${user.id}', event)">
+                            onclick="event.preventDefault(); event.stopPropagation(); toggleFollow('${user.id}', event)">
                         ${user.isFollowing
                             ? '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Following'
                             : '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg> Follow'}
                     </button>
                 ` : ''}
-            </article>
+            </a>
         `;
     }).join('');
 }
@@ -2274,11 +2467,14 @@ document.querySelector('.logo').addEventListener('click', (e) => {
 // ==================== Init ====================
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadPoems();
+    // Initialize router
+    initRouter();
     
+    // Handle admin param
     const urlParams = new URLSearchParams(window.location.search);
     if (window.location.hash === '#admin' || urlParams.get('admin') === 'true') {
-        window.location.hash = ''; showAdmin();
+        window.location.hash = ''; 
+        navigateTo('/admin');
     }
     
     setupPoemForm();
@@ -2291,15 +2487,5 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCurrentUser().then(() => {
         renderCommunityAuthState();
         renderProfileGuestState();
-        const sharedPoemId = urlParams.get('poem');
-        const sharedBlogId = urlParams.get('blog');
-        const sharedPostId = urlParams.get('post');
-        if (sharedPoemId) {
-            showPoem(sharedPoemId);
-        } else if (sharedBlogId) {
-            showBlogDetail(sharedBlogId);
-        } else if (sharedPostId) {
-            showCommunityPost(sharedPostId);
-        }
     });
 });

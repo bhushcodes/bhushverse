@@ -33,24 +33,24 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="#" class="logo" onclick="showHome()">
+            <a href="/" class="logo" onclick="navigateTo('/'); return false;">
                 <span class="logo-icon">✦</span>
                 <span class="logo-text">bhushverse</span>
             </a>
             
             <div class="nav-center">
                 <ul class="nav-links">
-                    <li><a href="#" class="nav-link active" data-page="home" onclick="showHome()">Poems</a></li>
-                    <li><a href="#" class="nav-link" data-page="blog" onclick="showBlog()">Blog</a></li>
-                    <li><a href="#" class="nav-link" data-page="community" onclick="showCommunity()">Community</a></li>
-                    <li><a href="#" class="nav-link" data-page="about" onclick="showAbout()">About</a></li>
+                    <li><a href="/poems" class="nav-link active" data-page="home" onclick="navigateTo('/poems'); return false;">Poems</a></li>
+                    <li><a href="/blogs" class="nav-link" data-page="blog" onclick="navigateTo('/blogs'); return false;">Blog</a></li>
+                    <li><a href="/community" class="nav-link" data-page="community" onclick="navigateTo('/community'); return false;">Community</a></li>
+                    <li><a href="/about" class="nav-link" data-page="about" onclick="navigateTo('/about'); return false;">About</a></li>
                 </ul>
             </div>
             
             <div class="nav-actions">
                 <button type="button" id="user-signin-button" class="nav-auth-btn" onclick="openUserAuthModal('login')">Sign In</button>
                 <div id="user-nav-actions" class="user-nav-actions" style="display:none;">
-                    <button type="button" class="nav-user-chip" onclick="showProfile()">
+                    <button type="button" class="nav-user-chip" onclick="navigateTo('/profile');">
                         <img id="nav-user-avatar" class="nav-user-avatar" src="" alt="Profile picture">
                         <span id="nav-user-name">Profile</span>
                     </button>
@@ -80,33 +80,33 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu">
         <div class="mobile-menu-header">
-            <a href="#" class="logo" onclick="showHome(); closeMobileMenu();">
+            <a href="/" onclick="navigateTo('/'); closeMobileMenu(); return false;" class="logo">
                 <span class="logo-icon">✦</span>
                 <span class="logo-text">bhushverse</span>
             </a>
         </div>
         <div class="mobile-menu-links">
-            <a href="#" onclick="showHome(); closeMobileMenu();">
+            <a href="/poems" onclick="navigateTo('/poems'); closeMobileMenu(); return false;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                 <span>Poems</span>
             </a>
-            <a href="#" onclick="showBlog(); closeMobileMenu();">
+            <a href="/blogs" onclick="navigateTo('/blogs'); closeMobileMenu(); return false;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 <span>Blog</span>
             </a>
-            <a href="#" onclick="showCommunity(); closeMobileMenu();">
+            <a href="/community" onclick="navigateTo('/community'); closeMobileMenu(); return false;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                 <span>Community</span>
             </a>
-            <a href="#" onclick="showAbout(); closeMobileMenu();">
+            <a href="/about" onclick="navigateTo('/about'); closeMobileMenu(); return false;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 <span>About</span>
             </a>
-            <a href="#" onclick="showProfile(); closeMobileMenu();" class="mobile-auth-link">
+            <a href="/profile" onclick="navigateTo('/profile'); closeMobileMenu(); return false;" class="mobile-auth-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span>Profile</span>
             </a>
-            <a href="#" onclick="showTerms(); closeMobileMenu();">
+            <a href="/terms" onclick="navigateTo('/terms'); closeMobileMenu(); return false;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                 <span>Terms</span>
             </a>
@@ -646,7 +646,7 @@
     <footer class="site-footer">
         <div class="footer-content">
             <span>© 2026 Bhushan. All rights reserved.</span>
-            <a href="#" class="footer-link" onclick="showTerms(); return false;">Usage Policy & Terms</a>
+            <a href="/terms" class="footer-link" onclick="navigateTo('/terms'); return false;">Usage Policy & Terms</a>
         </div>
     </footer>
 
