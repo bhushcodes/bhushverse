@@ -6,7 +6,7 @@
     <title>bhushverse - Poetry Collection</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Hind:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+Devanagari:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Sans+3:wght@400;500;600;700&family=Hind:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -37,26 +37,83 @@
                 <span class="logo-icon">✦</span>
                 <span class="logo-text">bhushverse</span>
             </a>
-            <ul class="nav-links">
-                <li><a href="#" class="nav-link active" data-page="home" onclick="showHome()">Poems</a></li>
-                <li><a href="#" class="nav-link" data-page="blog" onclick="showBlog()">Blog</a></li>
-                <li><a href="#" class="nav-link" data-page="about" onclick="showAbout()">About</a></li>
-                <li><a href="#" class="nav-link" data-page="terms" onclick="showTerms()">Terms</a></li>
-            </ul>
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            
+            <div class="nav-center">
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link active" data-page="home" onclick="showHome()">Poems</a></li>
+                    <li><a href="#" class="nav-link" data-page="blog" onclick="showBlog()">Blog</a></li>
+                    <li><a href="#" class="nav-link" data-page="community" onclick="showCommunity()">Community</a></li>
+                    <li><a href="#" class="nav-link" data-page="about" onclick="showAbout()">About</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-actions">
+                <button type="button" id="user-signin-button" class="nav-auth-btn" onclick="openUserAuthModal('login')">Sign In</button>
+                <div id="user-nav-actions" class="user-nav-actions" style="display:none;">
+                    <button type="button" class="nav-user-chip" onclick="showProfile()">
+                        <img id="nav-user-avatar" class="nav-user-avatar" src="" alt="Profile picture">
+                        <span id="nav-user-name">Profile</span>
+                    </button>
+                    <button type="button" class="nav-text-btn" onclick="logoutUser()">Logout</button>
+                </div>
+            </div>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
         </div>
+        
+        <!-- Search Bar -->
+        <div class="search-bar" id="search-bar">
+            <div class="search-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="search-input" placeholder="Search poems, blogs..." onkeyup="handleSearch(event)">
+                <button class="search-close" onclick="toggleSearch()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+        </div>
     </nav>
 
     <!-- Mobile Menu -->
     <div class="mobile-menu">
-        <a href="#" onclick="showHome(); closeMobileMenu();">Poems</a>
-        <a href="#" onclick="showBlog(); closeMobileMenu();">Blog</a>
-        <a href="#" onclick="showAbout(); closeMobileMenu();">About</a>
-        <a href="#" onclick="showTerms(); closeMobileMenu();">Terms</a>
+        <div class="mobile-menu-header">
+            <a href="#" class="logo" onclick="showHome(); closeMobileMenu();">
+                <span class="logo-icon">✦</span>
+                <span class="logo-text">bhushverse</span>
+            </a>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="#" onclick="showHome(); closeMobileMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                <span>Poems</span>
+            </a>
+            <a href="#" onclick="showBlog(); closeMobileMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>Blog</span>
+            </a>
+            <a href="#" onclick="showCommunity(); closeMobileMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>Community</span>
+            </a>
+            <a href="#" onclick="showAbout(); closeMobileMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>About</span>
+            </a>
+            <a href="#" onclick="showProfile(); closeMobileMenu();" class="mobile-auth-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Profile</span>
+            </a>
+            <a href="#" onclick="showTerms(); closeMobileMenu();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <span>Terms</span>
+            </a>
+        </div>
+        <div class="mobile-menu-footer" id="mobile-menu-footer">
+            <!-- Populated by JS -->
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -139,6 +196,69 @@
             <div class="blog-grid" id="blog-list"></div>
         </section>
 
+        <!-- Community Page -->
+        <section id="community-page" class="page">
+            <div class="blog-hero">
+                <h1>Community</h1>
+                <p class="hero-subtitle">A writing-first feed for poetry, blogs, and thoughtful words.</p>
+            </div>
+
+            <div class="language-tabs-wrapper">
+                <div class="language-tabs">
+                    <button class="lang-tab active" data-feed="all" onclick="switchCommunityFeed('all')">
+                        <span class="lang-indicator"></span><span>All Posts</span>
+                    </button>
+                    <button class="lang-tab" data-feed="following" onclick="switchCommunityFeed('following')">
+                        <span class="lang-indicator"></span><span>Following</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="community-auth-banner" class="community-auth-banner"></div>
+
+            <div class="poem-form community-composer" id="community-composer" style="display:none;">
+                <h2 id="community-form-title">Write Something</h2>
+                <form id="community-post-form">
+                    <input type="hidden" id="community-post-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="community-post-title">Title</label>
+                            <input type="text" id="community-post-title" required placeholder="Give your writing a title">
+                        </div>
+                        <div class="form-group form-group-small">
+                            <label for="community-post-type">Post Type</label>
+                            <select id="community-post-type">
+                                <option value="poetry">Poetry</option>
+                                <option value="blog">Blog</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-group-small">
+                            <label for="community-post-language">Language</label>
+                            <select id="community-post-language">
+                                <option value="english">English</option>
+                                <option value="hindi">हिंदी (Hindi)</option>
+                                <option value="marathi">मराठी (Marathi)</option>
+                                <option value="hinglish">Hinglish</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="community-post-content">Content</label>
+                        <textarea id="community-post-content" rows="8" required placeholder="Write your poem, blog, or thought here..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn">Publish Post</button>
+                        <button type="button" class="cancel-btn" onclick="saveCommunityDraft()">Save Draft</button>
+                        <button type="button" class="cancel-btn" id="community-form-cancel" onclick="resetCommunityComposer()" style="display:none;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="community-feed" id="community-feed"></div>
+        </section>
+
         <!-- About Page -->
         <section id="about-page" class="page">
             <div class="about-hero">
@@ -149,6 +269,89 @@
                         <h3>WHO AM I</h3>
                         <p>Bhushan here.Night owl. Overthinker.Just writing random thoughts, inspired by my dad’s love for Hindi literature.</p>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Page -->
+        <section id="profile-page" class="page">
+            <div id="profile-guest-state" class="empty-state" style="display:none;"></div>
+
+            <div id="profile-content" class="profile-instagram-page" style="display:none;">
+                <div class="profile-card profile-instagram-card">
+                    <div class="profile-header profile-instagram-header">
+                        <img id="profile-avatar-preview" class="profile-avatar-large" src="" alt="Profile picture">
+                        <div class="profile-header-copy">
+                            <div class="profile-handle-row">
+                                <div>
+                                    <div id="profile-personal-id" class="profile-personal-id">@yourid</div>
+                                    <h2 id="profile-name">Your Profile</h2>
+                                </div>
+                                <div class="profile-header-actions" id="profile-header-actions"></div>
+                            </div>
+                            <div class="profile-actions-row">
+                                <button type="button" class="profile-id-copy-btn" onclick="copyProfilePersonalId()">Copy ID</button>
+                                <p id="profile-created-at" class="profile-created-at"></p>
+                            </div>
+                            <p id="profile-email" class="profile-email"></p>
+                            <div class="profile-counts">
+                                <button type="button" class="profile-count-btn" onclick="focusProfilePosts()">
+                                    <strong id="stat-total-posts">0</strong>
+                                    <span>posts</span>
+                                </button>
+                                <button type="button" class="profile-count-btn" onclick="openProfileConnections('followers')">
+                                    <strong id="stat-followers">0</strong>
+                                    <span>followers</span>
+                                </button>
+                                <button type="button" class="profile-count-btn" onclick="openProfileConnections('following')">
+                                    <strong id="stat-following">0</strong>
+                                    <span>following</span>
+                                </button>
+                            </div>
+                            <p id="profile-bio-display" class="profile-bio-display"></p>
+                            <div class="profile-meta-chips" id="profile-meta-chips"></div>
+                        </div>
+                    </div>
+                    <div class="profile-edit-card" id="profile-edit-card" style="display:none;">
+                        <form id="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="profile-bio">Bio</label>
+                                    <textarea id="profile-bio" rows="4" placeholder="Tell readers about yourself"></textarea>
+                                </div>
+                                <div class="form-group form-group-small">
+                                    <label for="profile-gender">Gender</label>
+                                    <input type="text" id="profile-gender" placeholder="Add gender">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-small">
+                                    <label for="profile-age">Age</label>
+                                    <input type="number" id="profile-age" min="0" max="120" placeholder="Age">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-picture-input">Profile Picture</label>
+                                    <input type="file" id="profile-picture-input" accept="image/*">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="submit-btn">Save Profile</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="profile-grid-shell">
+                    <div class="profile-grid-nav">
+                        <button type="button" class="profile-grid-tab active" data-tab="poetry" onclick="switchProfileTab('poetry')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            <span>Poetry</span>
+                        </button>
+                        <button type="button" class="profile-grid-tab" data-tab="blogs" onclick="switchProfileTab('blogs')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            <span>Blogs</span>
+                        </button>
+                    </div>
+                    <div class="profile-post-grid" id="profile-dynamic-list"></div>
                 </div>
             </div>
         </section>
@@ -174,6 +377,13 @@
                         <div class="poem-content" id="poem-content"></div>
                     </div>
                     <div class="poem-actions">
+                        <button class="action-btn" id="poem-like-btn" onclick="toggleContentLike('poem', currentPoem && currentPoem.id, event)">
+                            <span>Like</span>
+                            <span id="poem-like-count">0</span>
+                        </button>
+                        <button class="action-btn" id="poem-save-btn" onclick="toggleContentSave('poem', currentPoem && currentPoem.id, event)">
+                            <span>Save</span>
+                        </button>
                         <button class="action-btn" onclick="sharePoem()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
                             <span>Share</span>
@@ -195,6 +405,44 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </button>
                     </nav>
+                </article>
+            </div>
+        </section>
+
+        <!-- Community Post Detail Page -->
+        <section id="community-post-page" class="page">
+            <div class="blog-detail">
+                <button class="back-btn" onclick="goBack()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    <span>Back</span>
+                </button>
+                <article class="full-blog">
+                    <div class="blog-header">
+                        <span class="blog-language-badge" id="community-post-type-badge"></span>
+                    </div>
+                    <h1 id="community-post-title-display"></h1>
+                    <div class="community-post-author profile-link-trigger" id="community-post-author-link" onclick="openUserProfile(currentCommunityPost && currentCommunityPost.authorId, event)">
+                        <img id="community-post-author-avatar" class="community-author-avatar" src="" alt="Author avatar">
+                        <div>
+                            <p id="community-post-author-name"></p>
+                            <p id="community-post-date" class="blog-meta"></p>
+                        </div>
+                    </div>
+                    <div class="blog-body">
+                        <div class="blog-content lang-english" id="community-post-content-display"></div>
+                    </div>
+                    <div class="community-interactions detail-interactions">
+                        <button class="action-btn" id="community-detail-like-btn" onclick="togglePostLike(currentCommunityPost && currentCommunityPost.id, event)">
+                            <span>Like</span>
+                            <span id="community-detail-like-count">0</span>
+                        </button>
+                        <button class="action-btn" id="community-detail-save-btn" onclick="togglePostSave(currentCommunityPost && currentCommunityPost.id, event)">
+                            <span>Save</span>
+                        </button>
+                        <button class="action-btn" onclick="shareCommunityPost(currentCommunityPost && currentCommunityPost.id, event)">
+                            <span>Share</span>
+                        </button>
+                    </div>
                 </article>
             </div>
         </section>
@@ -221,6 +469,13 @@
                         <div class="blog-content" id="blog-content"></div>
                     </div>
                     <div class="blog-actions">
+                        <button class="action-btn" id="blog-like-btn" onclick="toggleContentLike('blog', currentBlog && currentBlog.id, event)">
+                            <span>Like</span>
+                            <span id="blog-like-count">0</span>
+                        </button>
+                        <button class="action-btn" id="blog-save-btn" onclick="toggleContentSave('blog', currentBlog && currentBlog.id, event)">
+                            <span>Save</span>
+                        </button>
                         <button class="action-btn" onclick="shareBlog()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
                             <span>Share</span>
@@ -406,6 +661,84 @@
     </div>
 
     <!-- Login Modal -->
+    <div id="user-auth-modal" class="modal">
+        <div class="modal-content user-auth-modal-content">
+            <div class="auth-mode-tabs">
+                <button type="button" class="auth-mode-tab active" id="auth-tab-login" onclick="switchUserAuthMode('login')">Sign In</button>
+                <button type="button" class="auth-mode-tab" id="auth-tab-register" onclick="switchUserAuthMode('register')">Create Account</button>
+            </div>
+
+            <div id="user-login-section">
+                <h2>Welcome back</h2>
+                <p class="auth-description">Enter your credentials to access your account</p>
+                
+                <form id="user-login-form">
+                    <div class="input-group">
+                        <label for="user-login-username">Username</label>
+                        <input type="text" id="user-login-username" placeholder="your_username" autocomplete="username" spellcheck="false" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="user-login-password">Password</label>
+                        <input type="password" id="user-login-password" placeholder="••••••••" autocomplete="current-password" minlength="6" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Sign In</button>
+                </form>
+            </div>
+
+            <div id="user-register-section" style="display:none;">
+                <h2>Join bhushverse</h2>
+                <p class="auth-description">Create an account to share your poetry</p>
+                
+                <!-- Step 1: Email verification -->
+                <div id="register-step-1">
+                    <div class="input-group">
+                        <label for="user-register-email">Email Address</label>
+                        <input type="email" id="user-register-email" placeholder="your@email.com" autocomplete="email" required>
+                        <span class="input-hint">We'll send a verification code to this email</span>
+                    </div>
+                    <button type="button" class="submit-btn" id="send-code-btn" onclick="sendVerificationCode()">Send Verification Code</button>
+                    <p class="auth-resend" id="code-sent-msg" style="display:none;">
+                        Code sent to <span id="sent-email"></span>. <a href="#" onclick="showEmailStep(); return false;">Change email</a>
+                    </p>
+                </div>
+
+                <!-- Step 2: Account details -->
+                <div id="register-step-2" style="display:none;">
+                    <form id="user-register-form">
+                        <div class="input-group">
+                            <label for="user-register-code">Verification Code</label>
+                            <input type="text" id="user-register-code" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" required>
+                            <span class="input-hint">Enter the code sent to your email</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="user-register-name">Full Name</label>
+                            <input type="text" id="user-register-name" placeholder="Your name" autocomplete="name" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="user-register-username">Username</label>
+                            <input type="text" id="user-register-username" placeholder="choose_username" autocomplete="username" spellcheck="false" minlength="3" maxlength="24" pattern="[A-Za-z0-9._]+" required>
+                            <span class="input-hint">Letters, numbers, dots and underscores only</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="user-register-password">Password</label>
+                            <input type="password" id="user-register-password" placeholder="••••••••" autocomplete="new-password" minlength="6" required>
+                            <span class="input-hint">At least 6 characters</span>
+                        </div>
+                        <button type="submit" class="submit-btn">Create Account</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="user-google-auth" class="user-google-auth" style="display:none;">
+                <div class="auth-divider"><span>or</span></div>
+                <p class="auth-google-label">Continue with Google</p>
+                <div id="user-google-signin-button" class="google-signin-button"></div>
+            </div>
+
+            <p class="modal-error" id="user-auth-error"></p>
+        </div>
+    </div>
+
     <div id="login-modal" class="modal">
         <div class="modal-content">
             <h2>Admin Login</h2>
@@ -418,9 +751,34 @@
         </div>
     </div>
 
+    <!-- Username Setup Modal -->
+    <div id="username-modal" class="modal">
+        <div class="modal-content">
+            <h2>Welcome!</h2>
+            <p>Please set up your username to continue</p>
+            <form id="username-form">
+                <input type="text" id="username-input" placeholder="Choose a username" required minlength="3" maxlength="20">
+                <p class="username-hint">Letters, numbers, and underscores only</p>
+                <p class="modal-error" id="username-error"></p>
+                <button type="submit" class="submit-btn">Continue</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="profile-list-modal" class="modal">
+        <div class="modal-content profile-list-modal-content">
+            <div class="profile-list-modal-header">
+                <h2 id="profile-list-modal-title">Followers</h2>
+                <button type="button" class="profile-list-modal-close" onclick="closeProfileModal()">Close</button>
+            </div>
+            <div id="profile-list-modal-body" class="profile-list-modal-body"></div>
+        </div>
+    </div>
+
     <!-- Hidden canvas -->
     <canvas id="poem-canvas" style="display:none;"></canvas>
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
